@@ -1,6 +1,7 @@
 /server/.env
 /server/node_modules
 /server/ormconfig.json
+/server/dist
 
 /web/.env
 /web/node_modules
