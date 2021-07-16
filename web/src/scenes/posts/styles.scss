@@ -1,0 +1,30 @@
+.posts {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+
+  &__post {
+    display: flex;
+    &__close {
+      margin-left: 8px;
+      cursor: pointer;
+    }
+  }
+  &__container {
+    align-self: flex-start;
+    margin-left: 16px;
+    margin-top: 16px;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__logout {
+    margin-top: 32px;
+    color: red;
+    cursor: pointer;
+  }
+}

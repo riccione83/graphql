@@ -1,0 +1,22 @@
+mutation CreatePost($title: String!) {
+  createPost(title: $title) {
+    id
+    title
+  }
+}
+
+mutation deletePost($id: Float!) {
+  deletePost(id: $id)
+}
+
+mutation Login($username: String!, $password: String!) {
+  login(username: $username, password: $password) {
+    errors {
+      message
+    }
+    user {
+      id
+      username
+    }
+  }
+}

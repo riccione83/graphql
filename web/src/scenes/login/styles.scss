@@ -1,0 +1,22 @@
+.login {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  &__form {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__field {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__submit {
+    width: 100px;
+    align-self: flex-end;
+  }
+}

@@ -1,0 +1,13 @@
+query Posts {
+  posts {
+    title
+    id
+  }
+}
+
+query Me {
+  me {
+    id
+    username
+  }
+}
