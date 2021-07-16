@@ -1,0 +1,63 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["prettier", "unicorn", "react", "react-hooks"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:unicorn/recommended",
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint",
+    "prettier/react",
+    "prettier/unicorn"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {
+    "react/prop-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-member-accessibility": "off",
+    "@typescript-eslint/prefer-interface": "error",
+    "@typescript-eslint/no-namespace": "error",
+    "prettier/prettier": "off",
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "replacements": {
+          "props": false,
+          "ref": false,
+          "src": false,
+        },
+        "whitelist": {
+          "props": true,
+          "Props": true,
+          "Ref": true,
+          "ref": true,
+          "src": true,
+          "Src": true,
+          "devEui": true,
+        }
+      }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-restricted-imports": [
+      "error",
+      "react-use",
+      "lodash",
+      "@material-ui/core",
+      "@material-ui/icons",
+      "date-fns"
+    ]
+  }
+}

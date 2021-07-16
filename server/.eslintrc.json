@@ -1,0 +1,79 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["prettier", "unicorn", "react", "react-hooks"],
+  "extends": [
+    "react-app",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:unicorn/recommended",
+    "plugin:prettier/recommended",
+    "prettier/react",
+    "prettier/unicorn",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier/@typescript-eslint"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {
+    "no-console": "error",
+    "react/prop-types": "off",
+    "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/unbound-method": "off",
+    "@typescript-eslint/no-type-alias": "off",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/promise-function-async": "off",
+    "@typescript-eslint/generic-type-naming": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-member-accessibility": "off",
+    "@typescript-eslint/no-angle-bracket-type-assertion": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-namespace": "error",
+    "@typescript-eslint/no-empty-function": "off",
+    "prettier/prettier": "error",
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/prefer-query-selector": "off",
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "replacements": {
+          "props": false,
+          "ref": false,
+          "src": false,
+          "env": false
+        },
+        "whitelist": {
+          "props": true,
+          "Props": true,
+          "Ref": true,
+          "ref": true,
+          "src": true,
+          "Src": true,
+          "devEui": true,
+          "env": true
+        }
+      }
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error",
+    "no-restricted-imports": [
+      "error",
+      "react-use",
+      "lodash",
+      "@material-ui/core",
+      "@material-ui/icons",
+      "date-fns"
+    ]
+  }
+}
