@@ -10,8 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Post = void 0;
-const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const user_1 = require("./user");
+const type_graphql_1 = require("type-graphql");
 let Post = class Post extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -39,6 +40,11 @@ __decorate([
     typeorm_1.Column({ nullable: true }),
     __metadata("design:type", Number)
 ], Post.prototype, "userId", void 0);
+__decorate([
+    type_graphql_1.Field(() => user_1.User, { nullable: true }),
+    typeorm_1.ManyToOne(() => user_1.User, (user) => user.posts, { nullable: true }),
+    __metadata("design:type", user_1.User)
+], Post.prototype, "user", void 0);
 Post = __decorate([
     type_graphql_1.ObjectType(),
     typeorm_1.Entity()

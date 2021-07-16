@@ -27,9 +27,6 @@ const type_graphql_1 = require("type-graphql");
 let PostResolver = class PostResolver {
     posts({ req }) {
         const userId = req.session.userId;
-        if (!userId) {
-            return undefined;
-        }
         return post_1.Post.find({ where: { userId: userId } });
     }
     post(id) {

@@ -35,6 +35,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         username: process.env.USERNAME,
         password: process.env.PASSWORD,
         logging: true,
+        synchronize: false,
         migrations: [path_1.default.join(__dirname, './migrations/*')],
         entities: [user_1.User, post_1.Post],
     });
