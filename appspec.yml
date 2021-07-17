@@ -2,8 +2,8 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destionation: /home/ec2-user/graphql
-hook:
+    destination: /home/ec2-user/graphql
+hooks:
   ApplicationStop:
     - location: scripts/application_stop.sh
       timeout: 300
