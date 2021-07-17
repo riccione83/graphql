@@ -7,7 +7,7 @@ nvm install node
 sudo apt install yarn
 
 #create our working directory if it doesnt exist
-DIR="/home/ec2-user/graphql/server"
+DIR="/home/ec2-user/graphql"
 if [ -d "$DIR" ]; then
   echo "${DIR} exists"
 else
