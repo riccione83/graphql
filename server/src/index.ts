@@ -29,11 +29,19 @@ const main = async () => {
     entities: [User, Post],
   });
 
-  await c.runMigrations();
+  // await c.runMigrations();
 
   const app = express();
 
   app.set('trust proxy', 1);
+
+  app.all(process.env.CORS_ORIGIN, function (_, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+  });
+
   const pool = new Pool({
     user: process.env.USERNAME,
     host: process.env.HOST,
@@ -78,9 +86,11 @@ const main = async () => {
       res,
       // userLoader: createUserLoader(),
     }),
+    introspection: false,
+    playground: false,
   });
 
-  apolloServer.applyMiddleware({ app, cors: false });
+  apolloServer.applyMiddleware({ app, cors: false, path: '/data' });
 
   app.listen(process.env.PORT, () => {
     console.log('Server started');

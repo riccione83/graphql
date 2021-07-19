@@ -1,4 +1,9 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  InMemoryCache,
+  NetworkStatus,
+} from "@apollo/client";
 import React from "react";
 import ReactDOM from "react-dom";
 import {
@@ -15,15 +20,29 @@ import LoginPage from "./scenes/login/login";
 import User from "./scenes/posts/posts";
 import "./styles/base.scss";
 
+console.info(process.env.NODE_ENV);
+console.info(process.env.REACT_APP_GRAPHQL);
 const client = new ApolloClient({
   credentials: "include",
-  uri: "http://localhost:4000/graphql",
+  uri: process.env.REACT_APP_GRAPHQL,
   cache: new InMemoryCache(),
 });
 
 const MainPage: React.FC = () => {
-  const { data, loading } = useMeQuery();
-  console.info(loading, data);
+  const { data, loading, networkStatus, refetch } = useMeQuery();
+  if (networkStatus === NetworkStatus.loading) {
+    return <div>"Loading...."</div>;
+  }
+  if (networkStatus === NetworkStatus.error) {
+    return (
+      <>
+        <div>Network error</div>
+        <Link onClick={() => refetch()} to={"/"}>
+          Click here to refresh
+        </Link>
+      </>
+    );
+  }
   if (!loading && !data?.me) {
     return (
       <>

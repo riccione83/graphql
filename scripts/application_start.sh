@@ -12,7 +12,8 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # loads nvm bash_completion (node is in path now)
 
 #install node modules
-npm install
+yarn install
+yarn build
 
 #start our node app in the background
-node dist/index.js > app.out.log 2> app.err.log < /dev/null & 
+pm2 --name server start npm -- start

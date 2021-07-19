@@ -15,3 +15,7 @@ else
   echo "Creating ${DIR} directory"
   mkdir ${DIR}
 fi
+
+yum update -y
+npm install pm2@latest -g
+pm2 startup

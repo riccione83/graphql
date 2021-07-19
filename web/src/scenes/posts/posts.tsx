@@ -1,3 +1,4 @@
+import { NetworkStatus } from "@apollo/client";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { useState } from "react";
@@ -45,16 +46,41 @@ const User: React.FC = () => {
   const [deletePost] = useDeletePostMutation();
   const [logout] = useLogoutMutation();
   const { data: login, loading: userLoading } = useMeQuery();
-  const { data, refetch, loading, error: loadingError } = usePostsQuery();
+  const {
+    data,
+    refetch,
+    loading,
+    error: loadingError,
+    networkStatus,
+  } = usePostsQuery();
 
   useAuth();
 
+  const onLogout = async () => {
+    await logout({
+      variables: {},
+      update: updateMe,
+    }).then(() => {
+      history.push("/login");
+    });
+  };
+  if (networkStatus === NetworkStatus.error) {
+    // network error
+    return (
+      <div>
+        <div>Network error</div>
+        <Link to="/">Click here to refresh</Link>
+      </div>
+    );
+  }
+
   if (loadingError) {
     return (
-      <>
-        <div>Loading error!! {loadingError.message}</div>
+      <div>
+        <div>Loading error!! </div>
+        <div>{loadingError.message}</div>
         <Link to="/">Return to main page</Link>
-      </>
+      </div>
     );
   }
   return (
@@ -113,12 +139,7 @@ const User: React.FC = () => {
       <div
         className="posts__logout"
         onClick={async () => {
-          await logout({
-            variables: {},
-            update: updateMe,
-          }).then(() => {
-            history.push("/login");
-          });
+          onLogout();
         }}
       >
         Logout
