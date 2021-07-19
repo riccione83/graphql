@@ -92,6 +92,9 @@ const main = async () => {
 
   apolloServer.applyMiddleware({ app, cors: false, path: '/data' });
 
+  app.get('/healthz', function (_, res) {
+    res.status(200).send('OK');
+  });
   app.listen(process.env.PORT, () => {
     console.log('Server started');
   });
