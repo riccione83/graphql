@@ -1,6 +1,6 @@
 import { NetworkStatus, useApolloClient } from "@apollo/client";
 import { Field, Form, Formik } from "formik";
-import React, { useCallback } from "react";
+import React from "react";
 import { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import {
@@ -14,7 +14,7 @@ import {
 import { updateMe } from "../../utils";
 import { useAuth } from "../../utils/useAuth";
 import "./styles.scss";
-import Dropzone, { useDropzone } from "react-dropzone";
+import Dropzone from "react-dropzone";
 interface FormikValue {
   post: string;
   file: any | null;
@@ -48,11 +48,11 @@ const PostComponent: React.FC<{
       >
         {({ getRootProps, getInputProps }) => (
           <section>
-            <div {...getRootProps()}>
+            <div {...getRootProps()} style={{ marginBottom: 16 }}>
               <input {...getInputProps()} />
               {title}
               {imagePath && (
-                <div style={{ marginBottom: 16 }}>
+                <div>
                   <img src={imagePath} width={50} height={50} alt="img" />
                 </div>
               )}

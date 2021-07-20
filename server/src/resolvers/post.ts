@@ -1,8 +1,8 @@
 import { Post } from '../entities/post';
-import { Arg, Ctx, Field, Int, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { MyContext } from 'src/types';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
-import path, { resolve } from 'path';
+import path from 'path';
 import { createWriteStream } from 'fs';
 import url from 'url';
 import fse from 'fs-extra';
