@@ -13,6 +13,7 @@ import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import { MyContext } from './types';
 import 'dotenv-safe/config';
+import { graphqlUploadExpress, GraphQLUpload } from 'graphql-upload';
 
 const main = async () => {
   require('dotenv').config();
@@ -35,7 +36,18 @@ const main = async () => {
 
   app.set('trust proxy', 1);
 
-  app.all(process.env.CORS_ORIGIN, function (_, res, next) {
+  var corsOptions = {
+    origin: [process.env.CORS_ORIGIN, 'https://studio.apollographql.com'],
+    optionsSuccessStatus: 200, // For legacy browser support
+    credentials: true,
+  };
+
+  app.all(process.env.CORS_ORIGIN, function (req, res, next) {
+    let origin = req.headers.origin;
+    if (origin && corsOptions.origin.indexOf(origin) >= 0) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
@@ -53,12 +65,12 @@ const main = async () => {
   const pSession = new (require('connect-pg-simple')(session))();
   pSession.pool = pool;
 
-  app.use(
-    cors({
-      origin: process.env.CORS_ORIGIN,
-      credentials: true,
-    }),
-  );
+  var corsOptions = {
+    origin: [process.env.CORS_ORIGIN, 'https://studio.apollographql.com'],
+    optionsSuccessStatus: 200, // For legacy browser support
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
 
   app.use(
     session({
@@ -84,20 +96,25 @@ const main = async () => {
     context: ({ req, res }): MyContext => ({
       req,
       res,
-      // userLoader: createUserLoader(),
     }),
-    introspection: false,
-    playground: false,
+    introspection: true,
   });
+
+  app.use(graphqlUploadExpress({ maxFiles: 10 }));
+  await apolloServer.start();
 
   apolloServer.applyMiddleware({ app, cors: false, path: '/data' });
 
   app.get('/healthz', function (_, res) {
     res.status(200).send('OK');
   });
-  app.listen(process.env.PORT, () => {
-    console.log('Server started');
-  });
+
+  app.listen({ port: process.env.PORT });
+
+  console.log(
+    `🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`,
+  );
+  // await new Promise((r) => app.listen({ port: process.env.PORT }, r));
 };
 
 main().catch((err) => {

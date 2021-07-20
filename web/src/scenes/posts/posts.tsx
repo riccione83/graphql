@@ -1,6 +1,6 @@
-import { NetworkStatus } from "@apollo/client";
+import { NetworkStatus, useApolloClient } from "@apollo/client";
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import React, { useCallback } from "react";
 import { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import {
@@ -9,28 +9,50 @@ import {
   useLogoutMutation,
   useMeQuery,
   usePostsQuery,
+  useUploadMutation,
 } from "../../generated/graphql";
 import { updateMe } from "../../utils";
 import { useAuth } from "../../utils/useAuth";
 import "./styles.scss";
-
+import Dropzone, { useDropzone } from "react-dropzone";
 interface FormikValue {
   username: string;
 }
 
-const PostComponent: React.FC<{ title: string; onDelete: () => void }> = ({
-  title,
-  onDelete,
-}) => {
+const PostComponent: React.FC<{
+  title: string;
+  id: number;
+  onDelete: () => void;
+}> = ({ title, onDelete, id }) => {
   const [hover, setHover] = useState(false);
+  const [upload] = useUploadMutation();
 
+  const apolloClient = useApolloClient();
   return (
     <div
       className="posts__post"
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {title}
+      <Dropzone
+        onDrop={async (acceptedFiles) => {
+          acceptedFiles.forEach(async (file) => {
+            await upload({ variables: { id, file } }).then(() => {
+              apolloClient.resetStore();
+            });
+          });
+        }}
+      >
+        {({ getRootProps, getInputProps }) => (
+          <section>
+            <div {...getRootProps()}>
+              <input {...getInputProps()} />
+              {title}
+            </div>
+          </section>
+        )}
+      </Dropzone>
+
       {hover && (
         <div className="posts__post__close" onClick={onDelete}>
           "X"
@@ -93,6 +115,7 @@ const User: React.FC = () => {
             return (
               <div key={post.id}>
                 <PostComponent
+                  id={post.id}
                   title={post.title}
                   onDelete={() => {
                     deletePost({ variables: { id: post.id } }).then(() => {

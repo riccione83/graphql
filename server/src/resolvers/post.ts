@@ -1,6 +1,27 @@
 import { Post } from '../entities/post';
-import { Arg, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  Field,
+  InputType,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+} from 'type-graphql';
 import { MyContext } from 'src/types';
+import { FileUpload, GraphQLUpload, Upload } from 'graphql-upload';
+import path from 'path';
+import { createWriteStream } from 'fs';
+import { GraphQLNonNull } from 'graphql';
+
+export class FileInput implements Partial<any> {
+  @Field() filename: string;
+
+  @Field() mimetype: string;
+
+  @Field() encoding: string;
+}
 
 @Resolver()
 export class PostResolver {
@@ -50,5 +71,31 @@ export class PostResolver {
   async deletePost(@Arg('id') id: number): Promise<Boolean> {
     await Post.delete(id);
     return true;
+  }
+
+  @Mutation(() => Post, { nullable: true })
+  async uploadImage(
+    @Arg('id', () => Int!) id: number
+    @Arg('file', () => GraphQLUpload)
+    file: FileUpload,
+  ): Promise<Post | null> {
+    const { createReadStream, filename } = await file;
+    const destinationPath = path.join('../../uploads/images', filename);
+
+    const post = await Post.findOne(id);
+    if (!post) {
+      return null;
+    }
+
+    console.info('Savings', file);
+
+    await new Promise((res) =>
+      createReadStream().pipe(
+        createWriteStream(path.join(__dirname, destinationPath))
+          .on('error', (err) => console.error(err))
+          .on('close', res),
+      ),
+    );
+    return post;
   }
 }

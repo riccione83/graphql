@@ -19,10 +19,16 @@ import reportWebVitals from "./reportWebVitals";
 import LoginPage from "./scenes/login/login";
 import User from "./scenes/posts/posts";
 import "./styles/base.scss";
+import { createUploadLink } from "apollo-upload-client";
 
 console.info(process.env.NODE_ENV);
 console.info(process.env.REACT_APP_GRAPHQL);
 const client = new ApolloClient({
+  link: createUploadLink({
+    uri: process.env.REACT_APP_GRAPHQL,
+    fetch,
+    fetchOptions: { credentials: "include" },
+  }),
   credentials: "include",
   uri: process.env.REACT_APP_GRAPHQL,
   cache: new InMemoryCache(),

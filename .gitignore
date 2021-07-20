@@ -2,6 +2,8 @@
 /server/node_modules
 /server/ormconfig.json
 /server/dist
+/server/uploads
 
 /web/.env
 /web/node_modules
+/web/build

@@ -20,3 +20,9 @@ mutation Login($username: String!, $password: String!) {
     }
   }
 }
+
+mutation Upload($id: Int!, $file: Upload!) {
+  uploadImage(id: $id, file: $file) {
+    title
+  }
+}

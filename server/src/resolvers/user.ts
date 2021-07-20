@@ -90,8 +90,6 @@ export class UserResolver {
 
       if (verify) {
         user.posts = await Post.find({ where: { userId: user.id } });
-        // const posts = await em.find(Post, { userId: user.id });
-        // await em.populate(user.posts, { userId: user.id });
         req.session.userId = user.id;
         req.session.save();
         return { user };
@@ -108,10 +106,6 @@ export class UserResolver {
     if (!userId) {
       return undefined;
     }
-    // const user = await
-    // if (user) {
-    //   return user;
-    // }
     return User.findOne(parseInt(userId));
   }
 }
