@@ -1,5 +1,5 @@
-mutation CreatePost($title: String!) {
-  createPost(title: $title) {
+mutation CreatePost($title: String!, $file: Upload) {
+  createPost(title: $title, file: $file) {
     id
     title
   }

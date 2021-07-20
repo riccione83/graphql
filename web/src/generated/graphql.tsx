@@ -41,6 +41,7 @@ export type Mutation = {
 
 
 export type MutationCreatePostArgs = {
+  file?: Maybe<Scalars['Upload']>;
   title: Scalars['String'];
 };
 
@@ -78,7 +79,7 @@ export type Post = {
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   title: Scalars['String'];
-  imagePath: Scalars['String'];
+  imagePath?: Maybe<Scalars['String']>;
   userId: Scalars['Int'];
 };
 
@@ -144,6 +145,7 @@ export type LogoutMutation = (
 
 export type CreatePostMutationVariables = Exact<{
   title: Scalars['String'];
+  file?: Maybe<Scalars['Upload']>;
 }>;
 
 
@@ -273,8 +275,8 @@ export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const CreatePostDocument = gql`
-    mutation CreatePost($title: String!) {
-  createPost(title: $title) {
+    mutation CreatePost($title: String!, $file: Upload) {
+  createPost(title: $title, file: $file) {
     id
     title
   }
@@ -296,6 +298,7 @@ export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, C
  * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
  *   variables: {
  *      title: // value for 'title'
+ *      file: // value for 'file'
  *   },
  * });
  */

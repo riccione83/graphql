@@ -5,6 +5,7 @@ import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import path, { resolve } from 'path';
 import { createWriteStream } from 'fs';
 import url from 'url';
+import fse from 'fs-extra';
 
 function fullUrl(req: any) {
   return url.format({
@@ -20,7 +21,7 @@ export class PostResolver {
   posts(@Ctx() { req }: MyContext): Promise<Post[]> {
     const userId = req.session.userId;
 
-    return Post.find({ where: { userId: userId } });
+    return Post.find({ where: { userId: userId }, order: { id: 'ASC' } });
   }
 
   @Query(() => Post, { nullable: true })
@@ -30,15 +31,49 @@ export class PostResolver {
 
   @Mutation(() => Post)
   async createPost(
-    @Arg('title') title: string,
     @Ctx() { req }: MyContext,
+    @Arg('title') title: string,
+    @Arg('file', () => GraphQLUpload, { nullable: true }) file?: FileUpload,
   ): Promise<Post | undefined> {
     const userId = req.session.userId;
     if (!userId) {
       return undefined;
     }
     const post = await Post.create({ title: title, userId: userId });
-    return post.save();
+
+    if (file) {
+      const { createReadStream, filename } = await file;
+      const destinationPath = path.join('../../uploads/images', filename);
+      const imagePath = fullUrl(req) + '/uploads/' + filename;
+
+      post.imagePath = imagePath;
+      await post.save();
+      await new Promise((res) =>
+        createReadStream().pipe(
+          createWriteStream(path.join(__dirname, destinationPath))
+            .on('error', (err) => console.error(err))
+            .on('close', res),
+        ),
+      );
+      await fse.copy(
+        path.join(__dirname, '../../uploads/images'),
+        path.join(__dirname, '../../dist/uploads/images'),
+        {
+          overwrite: true,
+        },
+        (err) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log('success!');
+          }
+        },
+      );
+
+      return post;
+    } else {
+      return post.save();
+    }
   }
 
   @Mutation(() => Post, { nullable: true })

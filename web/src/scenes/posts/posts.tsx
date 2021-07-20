@@ -16,13 +16,14 @@ import { useAuth } from "../../utils/useAuth";
 import "./styles.scss";
 import Dropzone, { useDropzone } from "react-dropzone";
 interface FormikValue {
-  username: string;
+  post: string;
+  file: any | null;
 }
 
 const PostComponent: React.FC<{
   title: string;
   id: number;
-  imagePath?: string;
+  imagePath?: string | null;
   onDelete: () => void;
   onUpload: (file: any) => void;
 }> = ({ title, onDelete, onUpload, id, imagePath }) => {
@@ -51,7 +52,9 @@ const PostComponent: React.FC<{
               <input {...getInputProps()} />
               {title}
               {imagePath && (
-                <img src={imagePath} width={50} height={50} alt="img" />
+                <div style={{ marginBottom: 16 }}>
+                  <img src={imagePath} width={50} height={50} alt="img" />
+                </div>
               )}
             </div>
           </section>
@@ -92,6 +95,7 @@ const User: React.FC = () => {
       history.push("/login");
     });
   };
+
   if (networkStatus === NetworkStatus.error) {
     // network error
     return (
@@ -142,27 +146,53 @@ const User: React.FC = () => {
       )}
       <Formik
         initialValues={{
-          username: "",
-          password: "",
+          file: null,
+          post: "",
         }}
         onSubmit={async (values: FormikValue, { resetForm }) => {
-          values.username !== "" &&
+          values.post !== "" &&
             login?.me?.id &&
             (await addPost({
-              variables: { title: values.username },
+              variables: { title: values.post, file: values.file },
             }).then(() => {
               refetch();
             }));
           resetForm();
         }}
       >
-        {({ values, submitForm }) => {
+        {({ values, submitForm, setFieldValue }) => {
           return (
             <Form className="posts__form">
               <div>
-                <label>New post</label>{" "}
-                <Field type="text" name="username"></Field>
+                <label>New post</label>
+                <Field type="text" name="post"></Field>
               </div>
+              {values.file && (
+                <div>
+                  <img
+                    src={URL.createObjectURL(values.file)}
+                    alt="file"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+              )}
+              <Dropzone
+                onDrop={(acceptedFiles) => {
+                  setFieldValue("file", acceptedFiles[0]);
+                }}
+              >
+                {({ getRootProps, getInputProps }) => (
+                  <section>
+                    <div {...getRootProps()}>
+                      <input {...getInputProps()} />
+                      <p>
+                        Drag 'n' drop some files here, or click to select files
+                      </p>
+                    </div>
+                  </section>
+                )}
+              </Dropzone>
               <button style={{ marginTop: 16 }} type="submit">
                 Submit
               </button>
