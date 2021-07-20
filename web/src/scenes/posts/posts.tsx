@@ -22,12 +22,12 @@ interface FormikValue {
 const PostComponent: React.FC<{
   title: string;
   id: number;
+  imagePath?: string;
   onDelete: () => void;
-}> = ({ title, onDelete, id }) => {
+  onUpload: (file: any) => void;
+}> = ({ title, onDelete, onUpload, id, imagePath }) => {
   const [hover, setHover] = useState(false);
   const [upload] = useUploadMutation();
-
-  const apolloClient = useApolloClient();
   return (
     <div
       className="posts__post"
@@ -38,7 +38,9 @@ const PostComponent: React.FC<{
         onDrop={async (acceptedFiles) => {
           acceptedFiles.forEach(async (file) => {
             await upload({ variables: { id, file } }).then(() => {
-              apolloClient.resetStore();
+              console.info("Completed, refetching");
+              onUpload(file);
+              return;
             });
           });
         }}
@@ -48,6 +50,9 @@ const PostComponent: React.FC<{
             <div {...getRootProps()}>
               <input {...getInputProps()} />
               {title}
+              {imagePath && (
+                <img src={imagePath} width={50} height={50} alt="img" />
+              )}
             </div>
           </section>
         )}
@@ -76,8 +81,9 @@ const User: React.FC = () => {
     networkStatus,
   } = usePostsQuery();
 
-  useAuth();
+  const apolloClient = useApolloClient();
 
+  useAuth();
   const onLogout = async () => {
     await logout({
       variables: {},
@@ -105,6 +111,7 @@ const User: React.FC = () => {
       </div>
     );
   }
+
   return (
     <div className="posts">
       {loading || userLoading ? (
@@ -115,8 +122,13 @@ const User: React.FC = () => {
             return (
               <div key={post.id}>
                 <PostComponent
+                  imagePath={post.imagePath}
                   id={post.id}
                   title={post.title}
+                  onUpload={(file) => {
+                    refetch();
+                    apolloClient.resetStore();
+                  }}
                   onDelete={() => {
                     deletePost({ variables: { id: post.id } }).then(() => {
                       refetch();

@@ -2,6 +2,7 @@ query Posts {
   posts {
     title
     id
+    imagePath
   }
 }
 

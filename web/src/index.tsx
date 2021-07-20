@@ -31,7 +31,17 @@ const client = new ApolloClient({
   }),
   credentials: "include",
   uri: process.env.REACT_APP_GRAPHQL,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Post: {
+        fields: {
+          merge(existing, incoming) {
+            return { ...existing, ...incoming };
+          },
+        },
+      },
+    },
+  }),
 });
 
 const MainPage: React.FC = () => {

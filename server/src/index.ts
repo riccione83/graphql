@@ -13,7 +13,7 @@ import { PostResolver } from './resolvers/post';
 import { UserResolver } from './resolvers/user';
 import { MyContext } from './types';
 import 'dotenv-safe/config';
-import { graphqlUploadExpress, GraphQLUpload } from 'graphql-upload';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 const main = async () => {
   require('dotenv').config();
@@ -71,6 +71,9 @@ const main = async () => {
     credentials: true,
   };
   app.use(cors(corsOptions));
+
+  console.info(__dirname + '/uploads/images');
+  app.use('/uploads', express.static(__dirname + '/uploads/images'));
 
   app.use(
     session({

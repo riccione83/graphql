@@ -1,26 +1,17 @@
 import { Post } from '../entities/post';
-import {
-  Arg,
-  Ctx,
-  Field,
-  InputType,
-  Int,
-  Mutation,
-  Query,
-  Resolver,
-} from 'type-graphql';
+import { Arg, Ctx, Field, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { MyContext } from 'src/types';
-import { FileUpload, GraphQLUpload, Upload } from 'graphql-upload';
-import path from 'path';
+import { FileUpload, GraphQLUpload } from 'graphql-upload';
+import path, { resolve } from 'path';
 import { createWriteStream } from 'fs';
-import { GraphQLNonNull } from 'graphql';
+import url from 'url';
 
-export class FileInput implements Partial<any> {
-  @Field() filename: string;
-
-  @Field() mimetype: string;
-
-  @Field() encoding: string;
+function fullUrl(req: any) {
+  return url.format({
+    protocol: req.protocol,
+    host: req.get('host'),
+    // pathname: req.originalUrl,
+  });
 }
 
 @Resolver()
@@ -75,20 +66,21 @@ export class PostResolver {
 
   @Mutation(() => Post, { nullable: true })
   async uploadImage(
-    @Arg('id', () => Int!) id: number
-    @Arg('file', () => GraphQLUpload)
-    file: FileUpload,
+    @Arg('id', () => Int!) id: number,
+    @Arg('file', () => GraphQLUpload) file: FileUpload,
+    @Ctx()
+    { req }: MyContext,
   ): Promise<Post | null> {
     const { createReadStream, filename } = await file;
     const destinationPath = path.join('../../uploads/images', filename);
-
+    const imagePath = fullUrl(req) + '/uploads/' + filename;
     const post = await Post.findOne(id);
     if (!post) {
       return null;
     }
 
-    console.info('Savings', file);
-
+    post.imagePath = imagePath;
+    await post.save();
     await new Promise((res) =>
       createReadStream().pipe(
         createWriteStream(path.join(__dirname, destinationPath))

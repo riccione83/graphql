@@ -78,6 +78,7 @@ export type Post = {
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   title: Scalars['String'];
+  imagePath: Scalars['String'];
   userId: Scalars['Int'];
 };
 
@@ -185,7 +186,7 @@ export type PostsQuery = (
   { __typename?: 'Query' }
   & { posts?: Maybe<Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'title' | 'id'>
+    & Pick<Post, 'title' | 'id' | 'imagePath'>
   )>> }
 );
 
@@ -375,6 +376,7 @@ export const PostsDocument = gql`
   posts {
     title
     id
+    imagePath
   }
 }
     `;

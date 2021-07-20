@@ -29,6 +29,10 @@ export class Post extends BaseEntity {
   @Column()
   title!: string;
 
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  imagePath?: string;
+
   @Field(() => Int)
   @Column({ nullable: true })
   userId!: number;
