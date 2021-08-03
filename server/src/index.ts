@@ -15,6 +15,11 @@ import { MyContext } from './types';
 import 'dotenv-safe/config';
 import { graphqlUploadExpress } from 'graphql-upload';
 import fetch from 'node-fetch';
+import { __prod__ } from './constants';
+import {
+  ApolloServerPluginLandingPageDisabled,
+  ApolloServerPluginLandingPageGraphQLPlayground,
+} from 'apollo-server-core';
 
 const main = async () => {
   require('dotenv').config();
@@ -103,7 +108,12 @@ const main = async () => {
       req,
       res,
     }),
-    introspection: true,
+    introspection: !__prod__,
+    plugins: [
+      __prod__
+        ? ApolloServerPluginLandingPageDisabled()
+        : ApolloServerPluginLandingPageGraphQLPlayground(),
+    ],
   });
 
   app.use(graphqlUploadExpress({ maxFiles: 10 }));
@@ -128,6 +138,7 @@ const main = async () => {
 
   app.listen({ port: process.env.PORT });
 
+  console.log(`Starting as prod: ${__prod__}`);
   console.log(
     `🚀 Server ready at http://localhost:4000${apolloServer.graphqlPath}`,
   );
