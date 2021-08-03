@@ -1,0 +1,2 @@
+CREATE DATABASE lireddit;
+GRANT ALL PRIVILEGES ON DATABASE lireddit TO postgres;

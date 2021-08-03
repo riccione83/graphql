@@ -1,19 +1,22 @@
 # docker-compose.yml
 
-version: '3.7'
+version: "3.7"
 services:
   postgres:
-    image: postgres
+    build:
+      context: postgres/.
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: lireddit
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - ./db:/docker-entrypoint-initdb.d/
+      - web-db:/var/lib/postgresql/data
+
   server:
     build:
-      context: .
+      context: server/.
     environment:
       DB_SCHEMA: postgres
       DB_USER: postgres
@@ -22,4 +25,14 @@ services:
     depends_on:
       - postgres
     ports:
-      - '4000:4000'
+      - "4000:4000"
+
+  web:
+    build:
+      context: web/.
+    depends_on:
+      - server
+    ports:
+      - "8080:80"
+volumes:
+  web-db:

@@ -115,7 +115,7 @@ const main = async () => {
     res.status(200).send('OK');
   });
 
-  app.get('/spacex', async (req, res) => {
+  app.get('/spacex', async (_, res) => {
     fetch('https://api.spacexdata.com/v3/launches')
       .then((data) => data.json())
       .then((data) => {

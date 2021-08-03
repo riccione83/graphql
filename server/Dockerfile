@@ -1,4 +1,4 @@
-FROM node:12.13.0-alpine
+FROM node:12.20.0-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -18,6 +18,9 @@ RUN yarn
 COPY . .
 
 RUN yarn build
+
+RUN chmod 777 /usr/src/app/uploads/images/
+RUN chmod 777 /usr/src/app/dist/uploads/images/
 
 ENV NODE_ENV production
 
