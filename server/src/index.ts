@@ -17,7 +17,7 @@ import { graphqlUploadExpress } from 'graphql-upload';
 import fetch from 'node-fetch';
 import { __prod__ } from './constants';
 import {
-  ApolloServerPluginLandingPageDisabled,
+  // ApolloServerPluginLandingPageDisabled,
   ApolloServerPluginLandingPageGraphQLPlayground,
 } from 'apollo-server-core';
 
@@ -108,11 +108,12 @@ const main = async () => {
       req,
       res,
     }),
-    introspection: !__prod__,
+    introspection: true, //!__prod__,
     plugins: [
-      __prod__
-        ? ApolloServerPluginLandingPageDisabled()
-        : ApolloServerPluginLandingPageGraphQLPlayground(),
+      ApolloServerPluginLandingPageGraphQLPlayground(),
+      // __prod__
+      //   ? ApolloServerPluginLandingPageDisabled()
+      //   : ApolloServerPluginLandingPageGraphQLPlayground(),
     ],
   });
 

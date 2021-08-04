@@ -1,4 +1,4 @@
-CREATE DATABASE lireddit;
+
 GRANT ALL PRIVILEGES ON DATABASE lireddit TO postgres;
 
 CREATE TABLE IF NOT EXISTS "session" ("sid" varchar NOT NULL COLLATE "default","sess" json NOT NULL,"expire" timestamp(6) NOT NULL) WITH (OIDS=FALSE);

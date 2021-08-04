@@ -70,7 +70,7 @@ const PostComponent: React.FC<{
   );
 };
 
-const User: React.FC = () => {
+const Posts: React.FC = () => {
   const history = useHistory();
   const [addPost] = useCreatePostMutation();
   const [deletePost] = useDeletePostMutation();
@@ -213,4 +213,4 @@ const User: React.FC = () => {
   );
 };
 
-export default User;
+export default Posts;
