@@ -1,5 +1,10 @@
 import { ApolloCache } from "@apollo/client";
-import { MeDocument, MeQuery } from "../generated/graphql";
+import {
+  MeDocument,
+  MeQuery,
+  PostsDocument,
+  PostsQuery,
+} from "../generated/graphql";
 
 export const updateMe = (cache: ApolloCache<any>, { data }: any) => {
   cache.writeQuery<MeQuery>({
@@ -7,6 +12,14 @@ export const updateMe = (cache: ApolloCache<any>, { data }: any) => {
     data: {
       __typename: "Query",
       me: data?.login?.user,
+    },
+  });
+
+  cache.writeQuery<PostsQuery>({
+    query: PostsDocument,
+    data: {
+      __typename: "Query",
+      posts: data?.posts,
     },
   });
 };

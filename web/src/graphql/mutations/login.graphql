@@ -13,3 +13,10 @@ mutation Login($username: String!, $password: String!) {
 mutation Logout {
   logout
 }
+
+mutation Register($username: String!, $password: String!) {
+  register(options: { username: $username, password: $password }) {
+    id
+    username
+  }
+}

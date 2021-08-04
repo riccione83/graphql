@@ -15,6 +15,7 @@ import { updateMe } from "../../utils";
 import { useAuth } from "../../utils/useAuth";
 import "./styles.scss";
 import Dropzone from "react-dropzone";
+import { useEffect } from "react";
 interface FormikValue {
   post: string;
   file: any | null;
@@ -85,6 +86,9 @@ const Posts: React.FC = () => {
   } = usePostsQuery();
 
   const apolloClient = useApolloClient();
+  useEffect(() => {
+    refetch();
+  }, []); //eslint-disable-line react-hooks/exhaustive-deps
 
   useAuth();
   const onLogout = async () => {

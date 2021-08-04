@@ -20,6 +20,7 @@ import LoginPage from "./scenes/login/login";
 import Posts from "./scenes/posts/posts";
 import "./styles/base.scss";
 import { createUploadLink } from "apollo-upload-client";
+import RegisterPage from "./scenes/register";
 
 console.info(process.env.NODE_ENV);
 console.info(process.env.REACT_APP_GRAPHQL);
@@ -74,12 +75,27 @@ const MainPage: React.FC = () => {
 };
 
 const ProtectedRoute = ({ comp: Component, ...props }: any) => {
-  const user = useMeQuery();
+  const { data, loading } = useMeQuery();
+  if (loading) return null;
+
   return (
     <Route
       {...props}
       render={(props) =>
-        user.client ? <Component {...props} /> : <Redirect to="/login" />
+        data?.me ? <Component {...props} /> : <Redirect to="/login" />
+      }
+    />
+  );
+};
+
+const UnregisteredRoute = ({ comp: Component, ...props }: any) => {
+  const { data, loading } = useMeQuery();
+  if (loading) return null;
+  return (
+    <Route
+      {...props}
+      render={(props) =>
+        !data?.me ? <Component {...props} /> : <Redirect to="/" />
       }
     />
   );
@@ -97,6 +113,10 @@ ReactDOM.render(
             <LoginPage />
           </Route>
           <ProtectedRoute comp={Posts} exact path="/posts" />
+          <UnregisteredRoute comp={RegisterPage} exact path={"/register"} />
+          {/* <Route exact path="/register">
+            <RegisterPage />
+          </Route> */}
           <Route path="*">
             <div>Page not found</div>
           </Route>
