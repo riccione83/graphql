@@ -21,6 +21,7 @@ import Posts from "./scenes/posts/posts";
 import "./styles/base.scss";
 import { createUploadLink } from "apollo-upload-client";
 import RegisterPage from "./scenes/register";
+import SpaceXComponent from "./scenes/spacex";
 
 console.info(process.env.NODE_ENV);
 console.info(process.env.REACT_APP_GRAPHQL);
@@ -111,6 +112,9 @@ ReactDOM.render(
           </Route>
           <Route exact path="/login">
             <LoginPage />
+          </Route>
+          <Route exact path="/x">
+            <SpaceXComponent />
           </Route>
           <ProtectedRoute comp={Posts} exact path="/posts" />
           <UnregisteredRoute comp={RegisterPage} exact path={"/register"} />
