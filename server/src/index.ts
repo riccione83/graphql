@@ -24,21 +24,25 @@ import {
 const main = async () => {
   require('dotenv').config();
 
-  await createConnection({
-    type: 'postgres',
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    username: process.env.USERNAME,
-    password: process.env.PASSWORD,
-    logging: true,
-    synchronize: false,
-    migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User, Post],
-  }).then(async (c) => {
-    if (process.env.MIGRATION === '1') {
-      await c.runMigrations();
-    }
-  });
+  try {
+    await createConnection({
+      type: 'postgres',
+      host: process.env.HOST,
+      database: process.env.DATABASE,
+      username: process.env.USERNAME,
+      password: process.env.PASSWORD,
+      logging: true,
+      synchronize: false,
+      migrations: [path.join(__dirname, './migrations/*')],
+      entities: [User, Post],
+    }).then(async (c) => {
+      if (process.env.MIGRATION === '1') {
+        await c.runMigrations();
+      }
+    });
+  } catch {
+    console.log('Unable to connect to DB');
+  }
 
   const app = express();
 
@@ -70,18 +74,11 @@ const main = async () => {
     // port: 5433,
   });
 
-  const pSession = new (require('connect-pg-simple')(session))();
-  pSession.pool = pool;
-
-  var corsOptions = {
-    origin: [process.env.CORS_ORIGIN, 'https://studio.apollographql.com'],
-    optionsSuccessStatus: 200, // For legacy browser support
-    credentials: true,
-  };
-  app.use(cors(corsOptions));
-
-  console.info(__dirname + '/uploads/images');
-  app.use('/uploads', express.static(__dirname + '/uploads/images'));
+  let pSession: any | undefined = undefined;
+  if (process.env.USE_DB === '1') {
+    pSession = new (require('connect-pg-simple')(session))();
+    pSession.pool = pool;
+  }
 
   app.use(
     session({
@@ -98,6 +95,16 @@ const main = async () => {
       saveUninitialized: false,
     }),
   );
+
+  var corsOptions = {
+    origin: [process.env.CORS_ORIGIN, 'https://studio.apollographql.com'],
+    optionsSuccessStatus: 200, // For legacy browser support
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
+
+  console.info(__dirname + '/uploads/images');
+  app.use('/uploads', express.static(__dirname + '/uploads/images'));
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({

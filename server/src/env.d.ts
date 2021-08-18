@@ -8,5 +8,6 @@ declare namespace NodeJS {
     SESSION_SECRET: string;
     CORS_ORIGIN: string;
     MIGRATION: string;
+    USE_DB: string;
   }
 }
