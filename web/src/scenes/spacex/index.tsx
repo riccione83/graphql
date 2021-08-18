@@ -102,7 +102,7 @@ interface SpaceXFlight {
     wikipedia: string;
     video_link: string;
     youtube_id: string;
-    flickr_images: [];
+    flickr_images: string[];
   };
   details: string;
   static_fire_date_utc: string;
@@ -113,8 +113,9 @@ interface SpaceXFlight {
 }
 
 const SpaceXComponent: React.FC = () => {
-  const { data, isError, isLoading } = useGet<SpaceXFlight>(
-    "https://api.spacexdata.com/v3/launches"
+  const { data, isError, isLoading, refetch } = useGet<SpaceXFlight>(
+    "http://localhost:4000/spacex"
+    //"https://api.spacexdata.com/v3/launches"
   );
 
   if (isError) {
@@ -124,6 +125,7 @@ const SpaceXComponent: React.FC = () => {
     <div>Loading...</div>
   ) : (
     <div>
+      <div onClick={refetch}>Refresh</div>
       {data.map((flight) => {
         return (
           <div>
