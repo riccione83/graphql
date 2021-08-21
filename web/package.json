@@ -28,10 +28,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "heroku-postbuild": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "gen": "graphql-codegen --config codegen.yml"
+    "gen": "graphql-codegen --config codegen.yml",
+    "heroku-postbuild": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [
