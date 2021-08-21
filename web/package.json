@@ -12,6 +12,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.8",
+    "antd": "^4.16.12",
     "apollo-upload-client": "^16.0.0",
     "axios": "^0.21.1",
     "formik": "^2.2.9",
@@ -29,7 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "gen": "graphql-codegen --config codegen.yml"
+    "gen": "graphql-codegen --config codegen.yml",
+    "heroku-postbuild": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [

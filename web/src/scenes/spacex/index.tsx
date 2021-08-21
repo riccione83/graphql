@@ -1,6 +1,14 @@
 import React from "react";
 import { useGet } from "../../hooks/useGet";
 
+import Card from "antd/lib/card";
+import "antd/dist/antd.css";
+
+const gridStyle = {
+  width: "25%",
+  // textAlign: "center",
+};
+
 interface SpaceXFlight {
   flight_number: number;
   mission_name: string;
@@ -114,8 +122,8 @@ interface SpaceXFlight {
 
 const SpaceXComponent: React.FC = () => {
   const { data, isError, isLoading, refetch } = useGet<SpaceXFlight>(
-    "http://localhost:4000/spacex"
-    //"https://api.spacexdata.com/v3/launches"
+    // "http://localhost:4000/spacex"
+    "https://api.spacexdata.com/v3/launches"
   );
 
   if (isError) {
@@ -124,11 +132,17 @@ const SpaceXComponent: React.FC = () => {
   return isLoading ? (
     <div>Loading...</div>
   ) : (
-    <div>
-      <div onClick={refetch}>Refresh</div>
+    <Card
+      title="Refresh"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        refetch();
+      }}
+    >
       {data.map((flight) => {
         return (
-          <div>
+          <Card.Grid style={gridStyle}>
             {flight.mission_name}{" "}
             {flight.links.article_link && (
               <a
@@ -139,10 +153,10 @@ const SpaceXComponent: React.FC = () => {
                 Link
               </a>
             )}
-          </div>
+          </Card.Grid>
         );
       })}
-    </div>
+    </Card>
   );
 };
 
