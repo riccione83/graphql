@@ -9,7 +9,8 @@
     "dev": "HOST=localhost nodemon dist/index.js",
     "build": "tsc",
     "migrate-up": "typeorm migration:run",
-    "migrate-gen": "typeorm migration:generate -n"
+    "migrate-gen": "typeorm migration:generate -n",
+    "heroku-postbuild": "npm run build"
   },
   "keywords": [],
   "author": "",
