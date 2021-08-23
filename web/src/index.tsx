@@ -23,6 +23,8 @@ import { createUploadLink } from "apollo-upload-client";
 import RegisterPage from "./scenes/register";
 import SpaceXComponent from "./scenes/spacex";
 
+declare module "apollo-upload-client";
+
 console.info(process.env.NODE_ENV);
 console.info(process.env.REACT_APP_GRAPHQL);
 const client = new ApolloClient({
