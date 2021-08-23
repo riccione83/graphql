@@ -9,5 +9,6 @@ declare namespace NodeJS {
     CORS_ORIGIN: string;
     MIGRATION: string;
     USE_DB: string;
+    DATABASE_URL: string;
   }
 }
