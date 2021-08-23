@@ -27,7 +27,9 @@ const main = async () => {
   try {
     await createConnection({
       type: 'postgres',
-      ssl: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
       host: process.env.HOST,
       database: process.env.DATABASE,
       username: process.env.USERNAME,
