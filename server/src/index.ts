@@ -71,11 +71,11 @@ const main = async () => {
   });
 
   const pool = new Pool({
-    // user: process.env.USERNAME,
+    user: process.env.USERNAME,
     // host: process.env.HOST,
     connectionString: process.env.DATABASE_URL,
-    // database: process.env.DATABASE,
-    // password: process.env.PASSWORD,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
     ssl: {
       rejectUnauthorized: false,
     },
@@ -83,10 +83,10 @@ const main = async () => {
   });
 
   let pSession: any | undefined = undefined;
-  if (process.env.USE_DB === '1') {
-    pSession = new (require('connect-pg-simple')(session))();
-    pSession.pool = pool;
-  }
+  // if (process.env.USE_DB === '1') {
+  pSession = new (require('connect-pg-simple')(session))();
+  pSession.pool = pool;
+  // }
 
   app.use(
     session({
@@ -96,11 +96,11 @@ const main = async () => {
       resave: false,
       cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
-        secure: false,
+        secure: true,
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'none',
       },
-      saveUninitialized: false,
+      saveUninitialized: true,
     }),
   );
 
