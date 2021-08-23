@@ -72,6 +72,7 @@ const main = async () => {
     host: process.env.HOST,
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
+    ssl: true,
     // port: 5433,
   });
 
