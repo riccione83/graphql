@@ -10,5 +10,8 @@ declare namespace NodeJS {
     MIGRATION: string;
     USE_DB: string;
     DATABASE_URL: string;
+    AWS_ID: string;
+    AWS_SECRET: string;
+    BUCKET_NAME: string;
   }
 }

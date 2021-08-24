@@ -36,6 +36,7 @@
     "@types/express-session": "^1.17.4",
     "apollo-server-express": "^3.0.1",
     "argon2": "^0.28.2",
+    "aws-sdk": "^2.974.0",
     "class-validator": "^0.13.1",
     "connect-pg-simple": "^6.2.1",
     "cors": "^2.8.5",

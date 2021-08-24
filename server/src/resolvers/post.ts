@@ -31,7 +31,7 @@ export class PostResolver {
 
   @Mutation(() => Post)
   async createPost(
-    @Ctx() { req }: MyContext,
+    @Ctx() { req, s3 }: MyContext,
     @Arg('title') title: string,
     @Arg('file', () => GraphQLUpload, { nullable: true }) file?: FileUpload,
   ): Promise<Post | undefined> {
@@ -43,34 +43,19 @@ export class PostResolver {
 
     if (file) {
       const { createReadStream, filename } = await file;
-      const destinationPath = path.join('../../uploads/images', filename);
-      const imagePath = fullUrl(req) + '/uploads/' + filename;
+      console.info('Starting upload a new file...');
+      const body = createReadStream();
+      const params = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: `uploads/${filename}`,
+        Body: body,
+      };
 
-      post.imagePath = imagePath;
-      await post.save();
-      await new Promise((res) =>
-        createReadStream().pipe(
-          createWriteStream(path.join(__dirname, destinationPath))
-            .on('error', (err) => console.error(err))
-            .on('close', res),
-        ),
-      );
-      await fse.copy(
-        path.join(__dirname, '../../uploads/images'),
-        path.join(__dirname, '../../dist/uploads/images'),
-        {
-          overwrite: true,
-        },
-        (err) => {
-          if (err) {
-            console.error(err);
-          } else {
-            console.log('success!');
-          }
-        },
-      );
+      const data = await s3.upload(params, {}).promise();
 
-      return post;
+      console.info('Done!');
+      post.imagePath = data.Location;
+      return post.save();
     } else {
       return post.save();
     }
@@ -99,30 +84,43 @@ export class PostResolver {
     return true;
   }
 
-  @Mutation(() => Post, { nullable: true })
-  async uploadImage(
-    @Arg('id', () => Int!) id: number,
-    @Arg('file', () => GraphQLUpload) file: FileUpload,
-    @Ctx()
-    { req }: MyContext,
-  ): Promise<Post | null> {
-    const { createReadStream, filename } = await file;
-    const destinationPath = path.join('../../uploads/images', filename);
-    const imagePath = fullUrl(req) + '/uploads/' + filename;
-    const post = await Post.findOne(id);
-    if (!post) {
-      return null;
-    }
+  // @Mutation(() => Post, { nullable: true })
+  // async uploadImage(
+  //   @Arg('id', () => Int!) id: number,
+  //   @Arg('file', () => GraphQLUpload) file: FileUpload,
+  //   @Ctx()
+  //   { req, s3 }: MyContext,
+  // ): Promise<Post | null> {
+  //   const { createReadStream, filename } = await file;
+  //   // const destinationPath = path.join('../../uploads/images', filename);
+  //   // const imagePath = fullUrl(req) + '/uploads/' + filename;
+  //   const post = await Post.findOne(id);
+  //   console.info('Found post', post);
+  //   if (!post) {
+  //     return null;
+  //   }
 
-    post.imagePath = imagePath;
-    await post.save();
-    await new Promise((res) =>
-      createReadStream().pipe(
-        createWriteStream(path.join(__dirname, destinationPath))
-          .on('error', (err) => console.error(err))
-          .on('close', res),
-      ),
-    );
-    return post;
-  }
+  //   console.info('Starting upload a new file...');
+  //   const params = {
+  //     Bucket: process.env.BUCKET_NAME,
+  //     Key: 'uploads',
+  //     Body: createReadStream,
+  //   };
+  //   console.info('Options:', JSON.stringify(params));
+  //   const data = await s3.upload(params, {}, async (err, data) => {
+  //     console.log('Success', data);
+  //     console.log('Error', err);
+  //     post.imagePath = imagePath;
+  //     await post.save();
+  //   });
+
+  //   // await new Promise((res) =>
+  //   //   createReadStream().pipe(
+  //   //     createWriteStream(path.join(__dirname, destinationPath))
+  //   //       .on('error', (err) => console.error(err))
+  //   //       .on('close', res),
+  //   //   ),
+  //   // );
+  //   return post;
+  // }
 }

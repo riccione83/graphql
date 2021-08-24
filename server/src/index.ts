@@ -20,16 +20,23 @@ import {
   // ApolloServerPluginLandingPageDisabled,
   ApolloServerPluginLandingPageGraphQLPlayground,
 } from 'apollo-server-core';
+import aws from 'aws-sdk';
 
 const main = async () => {
   require('dotenv').config();
 
+  if (process.env.AWS_ID === '') {
+    console.error('NO AWS KEY FOUND');
+  }
+
   try {
     await createConnection({
       type: 'postgres',
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      ssl: __prod__
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
       url: process.env.DATABASE_URL,
       // host: process.env.HOST,
       database: process.env.DATABASE,
@@ -76,9 +83,11 @@ const main = async () => {
     connectionString: process.env.DATABASE_URL,
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl: __prod__
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
     // port: 5433,
   });
 
@@ -96,9 +105,9 @@ const main = async () => {
       resave: false,
       cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
-        secure: true,
+        secure: __prod__,
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: __prod__ ? 'none' : 'lax',
       },
       saveUninitialized: true,
     }),
@@ -114,6 +123,13 @@ const main = async () => {
   console.info(__dirname + '/uploads/images');
   app.use('/uploads', express.static(__dirname + '/uploads/images'));
 
+  const s3 = new aws.S3({
+    credentials: {
+      accessKeyId: process.env.AWS_ID,
+      secretAccessKey: process.env.AWS_SECRET,
+    },
+  });
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [PostResolver, UserResolver],
@@ -122,6 +138,7 @@ const main = async () => {
     context: ({ req, res }): MyContext => ({
       req,
       res,
+      s3,
     }),
     introspection: true, //!__prod__,
     plugins: [
