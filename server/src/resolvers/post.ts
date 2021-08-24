@@ -27,21 +27,17 @@ export class PostResolver {
     if (!userId) {
       return undefined;
     }
-    const post = await Post.create({ title: title, userId: userId });
-
+    const post = Post.create({ title: title, userId: userId });
+    const id = (await post.save()).id;
     if (file) {
-      const { createReadStream, filename } = await file;
-      console.info('Starting upload a new file...');
+      const { createReadStream } = await file;
       const body = createReadStream();
       const params = {
         Bucket: process.env.BUCKET_NAME,
-        Key: `uploads/${filename}`,
+        Key: `${id}`,
         Body: body,
       };
-
       const data = await s3.upload(params, {}).promise();
-
-      console.info('Done!');
       post.imagePath = data.Location;
       return post.save();
     } else {
@@ -67,48 +63,30 @@ export class PostResolver {
   }
 
   @Mutation(() => Boolean)
-  async deletePost(@Arg('id') id: number): Promise<Boolean> {
+  async deletePost(
+    @Ctx() { s3 }: MyContext,
+    @Arg('id') id: number,
+  ): Promise<Boolean> {
+    const post = await Post.findOne({ id });
+    if (post && post.imagePath) {
+      var params = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: `${post.id}`,
+      };
+      try {
+        await s3.headObject(params).promise();
+        console.log('File Found in S3');
+        try {
+          await s3.deleteObject(params).promise();
+          console.log('file deleted Successfully');
+        } catch (err) {
+          console.log('ERROR in file Deleting : ' + JSON.stringify(err));
+        }
+      } catch (err) {
+        console.log('File not Found ERROR : ' + err.code);
+      }
+    }
     await Post.delete(id);
     return true;
   }
-
-  // @Mutation(() => Post, { nullable: true })
-  // async uploadImage(
-  //   @Arg('id', () => Int!) id: number,
-  //   @Arg('file', () => GraphQLUpload) file: FileUpload,
-  //   @Ctx()
-  //   { req, s3 }: MyContext,
-  // ): Promise<Post | null> {
-  //   const { createReadStream, filename } = await file;
-  //   // const destinationPath = path.join('../../uploads/images', filename);
-  //   // const imagePath = fullUrl(req) + '/uploads/' + filename;
-  //   const post = await Post.findOne(id);
-  //   console.info('Found post', post);
-  //   if (!post) {
-  //     return null;
-  //   }
-
-  //   console.info('Starting upload a new file...');
-  //   const params = {
-  //     Bucket: process.env.BUCKET_NAME,
-  //     Key: 'uploads',
-  //     Body: createReadStream,
-  //   };
-  //   console.info('Options:', JSON.stringify(params));
-  //   const data = await s3.upload(params, {}, async (err, data) => {
-  //     console.log('Success', data);
-  //     console.log('Error', err);
-  //     post.imagePath = imagePath;
-  //     await post.save();
-  //   });
-
-  //   // await new Promise((res) =>
-  //   //   createReadStream().pipe(
-  //   //     createWriteStream(path.join(__dirname, destinationPath))
-  //   //       .on('error', (err) => console.error(err))
-  //   //       .on('close', res),
-  //   //   ),
-  //   // );
-  //   return post;
-  // }
 }
