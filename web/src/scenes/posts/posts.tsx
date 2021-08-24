@@ -16,6 +16,7 @@ import { useAuth } from "../../utils/useAuth";
 import "./styles.scss";
 import Dropzone from "react-dropzone";
 import { useEffect } from "react";
+import { Card } from "antd";
 interface FormikValue {
   post: string;
   file: any | null;
@@ -28,14 +29,14 @@ const PostComponent: React.FC<{
   onDelete: () => void;
   onUpload: (file: any) => void;
 }> = ({ title, onDelete, onUpload, id, imagePath }) => {
-  const [hover, setHover] = useState(false);
   const [upload] = useUploadMutation();
+  const gridStyle = {
+    width: "25%",
+    // textAlign: "center",
+  };
+
   return (
-    <div
-      className="posts__post"
-      onMouseOver={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
+    <Card.Grid style={gridStyle}>
       <Dropzone
         onDrop={async (acceptedFiles) => {
           acceptedFiles.forEach(async (file) => {
@@ -51,7 +52,19 @@ const PostComponent: React.FC<{
           <section>
             <div {...getRootProps()} style={{ marginBottom: 16 }}>
               <input {...getInputProps()} />
-              {title}
+              <div>
+                {title}
+                <span
+                  className="posts__post__close"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onDelete();
+                  }}
+                >
+                  "X"
+                </span>
+              </div>
               {imagePath && (
                 <div>
                   <img src={imagePath} width={50} height={50} alt="img" />
@@ -61,13 +74,7 @@ const PostComponent: React.FC<{
           </section>
         )}
       </Dropzone>
-
-      {hover && (
-        <div className="posts__post__close" onClick={onDelete}>
-          "X"
-        </div>
-      )}
-    </div>
+    </Card.Grid>
   );
 };
 
@@ -86,6 +93,7 @@ const Posts: React.FC = () => {
   } = usePostsQuery();
 
   const apolloClient = useApolloClient();
+
   useEffect(() => {
     refetch();
   }, []); //eslint-disable-line react-hooks/exhaustive-deps
@@ -122,32 +130,38 @@ const Posts: React.FC = () => {
 
   return (
     <div className="posts">
-      {loading || userLoading ? (
-        "Loading..."
-      ) : (
-        <div className="posts__container">
-          {data?.posts?.map((post) => {
-            return (
-              <div key={post.id}>
-                <PostComponent
-                  imagePath={post.imagePath}
-                  id={post.id}
-                  title={post.title}
-                  onUpload={(file) => {
-                    refetch();
-                    apolloClient.resetStore();
-                  }}
-                  onDelete={() => {
-                    deletePost({ variables: { id: post.id } }).then(() => {
-                      refetch();
-                    });
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {loading || userLoading
+        ? "Loading..."
+        : data &&
+          data.posts &&
+          data.posts?.length > 0 && (
+            <Card
+              title="Your posts"
+              style={{ width: "100%", marginBottom: 16 }}
+            >
+              {data?.posts?.map((post) => {
+                return (
+                  <div key={post.id}>
+                    <PostComponent
+                      imagePath={post.imagePath}
+                      id={post.id}
+                      title={post.title}
+                      onUpload={async (file) => {
+                        await refetch();
+                        apolloClient.resetStore();
+                        window.location.reload();
+                      }}
+                      onDelete={() => {
+                        deletePost({ variables: { id: post.id } }).then(() => {
+                          refetch();
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              })}
+            </Card>
+          )}
       <Formik
         initialValues={{
           file: null,

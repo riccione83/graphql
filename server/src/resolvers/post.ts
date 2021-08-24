@@ -89,4 +89,48 @@ export class PostResolver {
     await Post.delete(id);
     return true;
   }
+
+  @Mutation(() => Post, { nullable: true })
+  async uploadImage(
+    @Arg('id', () => Int!) id: number,
+    @Arg('file', () => GraphQLUpload) file: FileUpload,
+    @Ctx() { s3 }: MyContext,
+  ): Promise<Post | null> {
+    const { createReadStream } = await file;
+
+    const post = await Post.findOne(id);
+    console.info('Found post', post);
+    if (!post) {
+      return null;
+    }
+    // If a file already exist, delete it
+    if (post && post.imagePath) {
+      var objectToDelete = {
+        Bucket: process.env.BUCKET_NAME,
+        Key: `${post.id}`,
+      };
+      try {
+        await s3.headObject(objectToDelete).promise();
+        console.log('File Found in S3');
+        try {
+          await s3.deleteObject(objectToDelete).promise();
+          console.log('file deleted Successfully');
+        } catch (err) {
+          console.log('ERROR in file Deleting : ' + JSON.stringify(err));
+        }
+      } catch (err) {
+        console.log('File not Found ERROR : ' + err.code);
+      }
+    }
+
+    console.info('Starting upload a new file...');
+    const params = {
+      Bucket: process.env.BUCKET_NAME,
+      Key: `${post.id}`,
+      Body: createReadStream(),
+    };
+    const data = await s3.upload(params, {}).promise();
+    post.imagePath = data.Location;
+    return post.save();
+  }
 }
