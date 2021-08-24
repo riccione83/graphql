@@ -2,18 +2,6 @@ import { Post } from '../entities/post';
 import { Arg, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { MyContext } from 'src/types';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
-import path from 'path';
-import { createWriteStream } from 'fs';
-import url from 'url';
-import fse from 'fs-extra';
-
-function fullUrl(req: any) {
-  return url.format({
-    protocol: req.protocol,
-    host: req.get('host'),
-    // pathname: req.originalUrl,
-  });
-}
 
 @Resolver()
 export class PostResolver {
