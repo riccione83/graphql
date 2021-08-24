@@ -74,6 +74,19 @@ const main = async () => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Headers', 'Set-Cookie');
+    next();
+  });
+
+  app.use(function (req, res, next) {
+    res.set('credentials', 'include');
+    res.set('Access-Control-Allow-Credentials', 'true');
+    res.set('Access-Control-Allow-Origin', req.headers.origin);
+    res.set('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+    res.set(
+      'Access-Control-Allow-Headers',
+      'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Set-Cookie',
+    );
     next();
   });
 
@@ -91,11 +104,8 @@ const main = async () => {
     // port: 5433,
   });
 
-  let pSession: any | undefined = undefined;
-  // if (process.env.USE_DB === '1') {
-  pSession = new (require('connect-pg-simple')(session))();
+  const pSession = new (require('connect-pg-simple')(session))();
   pSession.pool = pool;
-  // }
 
   app.use(
     session({
@@ -106,7 +116,7 @@ const main = async () => {
       cookie: {
         maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
         secure: __prod__,
-        httpOnly: true,
+        httpOnly: false,
         sameSite: __prod__ ? 'none' : 'lax',
       },
       saveUninitialized: true,
