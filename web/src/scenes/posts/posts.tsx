@@ -15,7 +15,7 @@ import { useAuth } from "../../utils/useAuth";
 import "./styles.scss";
 import Dropzone from "react-dropzone";
 import { useEffect } from "react";
-import { Card } from "antd";
+import { Card, Spin } from "antd";
 interface FormikValue {
   post: string;
   file: any | null;
@@ -30,8 +30,7 @@ const PostComponent: React.FC<{
 }> = ({ title, onDelete, onUpload, id, imagePath }) => {
   const [upload] = useUploadMutation();
   const gridStyle = {
-    width: "25%",
-    // textAlign: "center",
+    // width: "25%",
   };
 
   return (
@@ -126,41 +125,49 @@ const Posts: React.FC = () => {
       </div>
     );
   }
+  if (loading || userLoading) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Spin tip="Loading..." />
+      </div>
+    );
+  }
 
   return (
     <div className="posts">
-      {loading || userLoading
-        ? "Loading..."
-        : data &&
-          data.posts &&
-          data.posts?.length > 0 && (
-            <Card
-              title="Your posts"
-              style={{ width: "100%", marginBottom: 16 }}
-            >
-              {data?.posts?.map((post) => {
-                return (
-                  <div key={post.id}>
-                    <PostComponent
-                      imagePath={post.imagePath}
-                      id={post.id}
-                      title={post.title}
-                      onUpload={async (file) => {
-                        await refetch();
-                        apolloClient.resetStore();
-                        window.location.reload();
-                      }}
-                      onDelete={() => {
-                        deletePost({ variables: { id: post.id } }).then(() => {
-                          refetch();
-                        });
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </Card>
-          )}
+      {data && data.posts && data.posts?.length > 0 && (
+        <Card title="Your posts" style={{ width: "100%", marginBottom: 16 }}>
+          {data?.posts?.map((post) => {
+            return (
+              <div key={post.id}>
+                <PostComponent
+                  imagePath={post.imagePath}
+                  id={post.id}
+                  title={post.title}
+                  onUpload={async (file) => {
+                    await refetch();
+                    apolloClient.resetStore();
+                    window.location.reload();
+                  }}
+                  onDelete={() => {
+                    deletePost({ variables: { id: post.id } }).then(() => {
+                      refetch();
+                    });
+                  }}
+                />
+              </div>
+            );
+          })}
+        </Card>
+      )}
       <Formik
         initialValues={{
           file: null,

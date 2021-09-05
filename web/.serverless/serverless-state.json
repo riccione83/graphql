@@ -6,7 +6,7 @@
     },
     "provider": {
       "name": "aws",
-      "runtime": "nodejs12.x",
+      "runtime": "nodejs14.x",
       "profile": "s3-riky",
       "region": "eu-west-2",
       "stage": "dev",
@@ -137,7 +137,7 @@
                   {
                     "ErrorCode": 404,
                     "ResponseCode": 200,
-                    "ResponsePagePath": "/index.html"
+                    "ResponsePagePath": "/"
                   }
                 ],
                 "DefaultCacheBehavior": {
@@ -265,7 +265,7 @@
       "s3Sync": [
         {
           "bucketName": "rr-react-test",
-          "localDir": "build/"
+          "localDir": "build"
         }
       ]
     },
@@ -329,7 +329,7 @@
                 {
                   "ErrorCode": 404,
                   "ResponseCode": 200,
-                  "ResponsePagePath": "/index.html"
+                  "ResponsePagePath": "/"
                 }
               ],
               "DefaultCacheBehavior": {
@@ -383,7 +383,7 @@
     "isDashboardMonitoringPreconfigured": false
   },
   "package": {
-    "artifactDirectoryName": "serverless/myserverlessproject2/dev/1630102628710-2021-08-27T22:17:08.710Z",
+    "artifactDirectoryName": "serverless/myserverlessproject2/dev/1630185415909-2021-08-28T21:16:55.909Z",
     "artifact": ""
   }
 }

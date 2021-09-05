@@ -26,7 +26,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "deploy:push": "yarn build && sls deploy",
+    "deploy:push": "npm rebuild node-sass && yarn build && sls deploy",
     "deploy:remove": "sls remove",
     "start": "node --max_old_space_size=2560 node_modules/.bin/react-scripts start",
     "build": "node --max_old_space_size=2560 node_modules/.bin/react-scripts build",

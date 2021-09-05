@@ -124,7 +124,7 @@
             {
               "ErrorCode": 404,
               "ResponseCode": 200,
-              "ResponsePagePath": "/index.html"
+              "ResponsePagePath": "/"
             }
           ],
           "DefaultCacheBehavior": {

@@ -2,7 +2,7 @@ service: myserverlessproject2
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   profile: s3-riky
   region: eu-west-2
 
@@ -13,7 +13,7 @@ custom:
   bucketName: rr-react-test
   s3Sync:
     - bucketName: ${self:custom.bucketName}
-      localDir: build/
+      localDir: build
 
 resources:
   Resources:
@@ -43,7 +43,7 @@ resources:
       Properties:
         DistributionConfig:
           Origins:
-            - DomainName: ${self:custom.bucketName}.s3.amazonaws.com
+            - DomainName: ${self:custom.bucketName}.s3-website.eu-west-2.amazonaws.com
               Id: ReactApp
               CustomOriginConfig:
                 HTTPPort: 80
@@ -54,8 +54,10 @@ resources:
           CustomErrorResponses:
             - ErrorCode: 404
               ResponseCode: 200
-              ResponsePagePath: /index.html
+              ResponsePagePath: /
           DefaultCacheBehavior:
+            cachePolicy:
+              id: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
             AllowedMethods:
               - DELETE
               - GET

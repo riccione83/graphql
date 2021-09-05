@@ -1,3 +1,4 @@
+import Spin from "antd/lib/spin";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { useHistory } from "react-router-dom";
@@ -20,7 +21,7 @@ export const toErrorMap = (errors: FieldError[]) => {
 };
 
 const LoginPage: React.FC = () => {
-  const [login] = useLoginMutation();
+  const [login, { loading }] = useLoginMutation();
   const history = useHistory();
 
   return (
@@ -44,6 +45,7 @@ const LoginPage: React.FC = () => {
         }}
       >
         {({ values, submitForm, errors }) => {
+          if (loading) return <Spin tip="Loading..." />;
           return (
             <Form className="login__form">
               <div className="login__field">
